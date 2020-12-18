@@ -1,6 +1,7 @@
 import { Network } from './nodes.js';
 import NoiseNode from './nodes/noise.js';
 import ConstantNode from './nodes/constant.js';
+import BrightnessContrastNode from './nodes/brightnessContrast.js';
 
 // Initialize WebGL
 const canvas = document.getElementById('c');
@@ -10,13 +11,17 @@ twgl.setDefaults({ attribPrefix: 'a_' });
 // Create the network
 const network = new Network();
 const noise1 = network.createNode(NoiseNode, 'noise1', 1, 1);
-const constant1 = network.createNode(ConstantNode, 'constant1', 1, 1);
-network.setRenderedNode(noise1);
+const constant1 = network.createNode(ConstantNode, 'constant1', 1, 2);
+const brightnessContrast1 = network.createNode(BrightnessContrastNode, 'brightnessContrast1', 2, 1);
+brightnessContrast1.brightness.value = 0.2;
 
+network.setRenderedNode(brightnessContrast1);
+network.connect(noise1, brightnessContrast1, 'image');
 // Initialize the network (create the shaders)
 network.init(gl);
+window.network = network;
 
-network.render(gl);
+// network.render(gl);
 
 const vs = `
 attribute vec4 a_position;
@@ -72,5 +77,5 @@ function render(time) {
   twgl.drawBufferInfo(gl, quadBuffer, gl.TRIANGLE_FAN);
   requestAnimationFrame(render);
 }
-requestAnimationFrame(render);
+// requestAnimationFrame(render);
 render();

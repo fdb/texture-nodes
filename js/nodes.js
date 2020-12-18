@@ -1,6 +1,13 @@
 const PARAMETER_TYPE_INT = 'int';
 const PARAMETER_TYPE_FLOAT = 'float';
 
+export class Port {
+  constructor(name) {
+    this.name = name;
+    this.framebuffer = null;
+  }
+}
+
 export class Parameter {
   constructor(name, type, value) {
     this.name = name;
@@ -14,14 +21,33 @@ export class Node {
     this.name = name;
     this.x = x;
     this.y = y;
+    this.inputs = [];
     this.parameters = [];
     this.framebufferOut = null;
+  }
+
+  createInput(name) {
+    const port = new Port(name);
+    this.inputs.push(port);
+    return port;
   }
 
   createIntParameter(name, value) {
     const param = new Parameter(name, PARAMETER_TYPE_INT, value);
     this.parameters.push(param);
     return param;
+  }
+
+  createFloatParameter(name, value) {
+    const param = new Parameter(name, PARAMETER_TYPE_FLOAT, value);
+    this.parameters.push(param);
+    return param;
+  }
+
+  _setInputFramebuffer(inputName, framebuffer) {
+    const input = this.inputs.find((i) => i.name === inputName);
+    console.assert(input);
+    input.framebuffer = framebuffer;
   }
 
   _initFramebufferOut(gl) {
@@ -34,6 +60,7 @@ export class Node {
       },
     ];
     this.framebufferOut = twgl.createFramebufferInfo(gl, attachments, this.width.value, this.height.value);
+    this.framebufferOut.name = this.name;
   }
 
   _init(gl, vertexShader, fragmentShader) {
@@ -41,6 +68,7 @@ export class Node {
     this._initFramebufferOut(gl);
     this.quadBuffer = twgl.createBufferInfoFromArrays(gl, {
       position: { data: [1, 1, 1, -1, -1, -1, -1, 1], numComponents: 2 },
+      texCoord: { data: [1, 0, 1, 1, 0, 1, 0, 0] },
     });
   }
 
@@ -85,6 +113,13 @@ export class Network {
     }
   }
 
+  connect(outputNode, inputNode, inputPort) {
+    console.assert(typeof outputNode === 'object');
+    console.assert(typeof inputNode === 'object');
+    console.assert(typeof inputPort === 'string');
+    this.connections.push({ output: outputNode.name, input: inputNode.name, port: inputPort });
+  }
+
   init(gl) {
     for (const node of this.nodes) {
       node.init(gl);
@@ -94,6 +129,17 @@ export class Network {
   render(gl, time) {
     if (!this.renderedNode) return;
     const node = this.getNode(this.renderedNode);
+    this._renderNode(node, gl, time);
+  }
+
+  _renderNode(node, gl, time) {
+    // Check if node has inputs
+    const dependencies = this.connections.filter((conn) => conn.input === node.name);
+    for (const conn of dependencies) {
+      const outputNode = this.getNode(conn.output);
+      this._renderNode(outputNode, gl, time);
+      node._setInputFramebuffer(conn.port, outputNode.framebufferOut);
+    }
     node.render(gl, time);
   }
 }
