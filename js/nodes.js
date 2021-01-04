@@ -97,7 +97,7 @@ export class Node {
     this._initFramebufferOut(gl);
     this.quadBuffer = twgl.createBufferInfoFromArrays(gl, {
       position: { data: [1, 1, 1, -1, -1, -1, -1, 1], numComponents: 2 },
-      texCoord: { data: [1, 0, 1, 1, 0, 1, 0, 0] },
+      texCoord: { data: [1, 1, 1, 0, 0, 0, 0, 1] },
     });
   }
 

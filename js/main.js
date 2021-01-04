@@ -5,6 +5,7 @@ import BrightnessContrastNode from './nodes/brightnessContrast.js';
 import BlurNode from './nodes/blur.js';
 import SharpenNode from './nodes/sharpen.js';
 import FeedbackNode from './nodes/feedback.js';
+import ImageNode from './nodes/image.js';
 
 // Initialize WebGL
 const canvas = document.getElementById('c');
@@ -27,10 +28,18 @@ blur1.size.value = 0.5;
 const sharpen1 = network.createNode(SharpenNode, 'sharpen1', 4, 1);
 sharpen1.intensity.value = 1.0;
 
-network.setRenderedNode(sharpen1);
+const image1 = network.createNode(ImageNode, 'image1', 5, 1);
+const brightnessContrast1 = network.createNode(BrightnessContrastNode, 'brightnessContrast1', 6, 1);
+brightnessContrast1.brightness.value = -0.2;
+brightnessContrast1.contrast.value = 0.5;
+
+network.connect(image1, brightnessContrast1, 'image');
 network.connect(noise1, feedback1, 'image');
 network.connect(feedback1, blur1, 'image');
 network.connect(blur1, sharpen1, 'image');
+
+network.setRenderedNode(sharpen1);
+
 network.init(gl);
 window.network = network;
 
