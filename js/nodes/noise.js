@@ -114,7 +114,8 @@ export default class NoiseNode extends Node {
 
   render(gl, time) {
     const uniforms = {
-      u_position: [1.0 + time * 0.001, -time * 0.0005],
+      // u_position: [1.0 + time * 0.001, -time * 0.0005],
+      u_position: [0.0, 0.0],
       u_scale: 10.0,
     };
 

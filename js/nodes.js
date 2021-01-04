@@ -50,7 +50,7 @@ export class Node {
     input.framebuffer = framebuffer;
   }
 
-  _initFramebufferOut(gl) {
+  _createFramebuffer(gl) {
     const attachments = [
       {
         format: gl.RGBA,
@@ -59,7 +59,12 @@ export class Node {
         wrap: gl.CLAMP_TO_EDGE,
       },
     ];
-    this.framebufferOut = twgl.createFramebufferInfo(gl, attachments, this.width.value, this.height.value);
+    const framebuffer = twgl.createFramebufferInfo(gl, attachments, this.width.value, this.height.value);
+    return framebuffer;
+  }
+
+  _initFramebufferOut(gl) {
+    this.framebufferOut = this._createFramebuffer(gl);
     this.framebufferOut.name = this.name;
   }
 

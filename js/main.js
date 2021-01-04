@@ -2,6 +2,8 @@ import { Network } from './nodes.js';
 import NoiseNode from './nodes/noise.js';
 import ConstantNode from './nodes/constant.js';
 import BrightnessContrastNode from './nodes/brightnessContrast.js';
+import BlurNode from './nodes/blur.js';
+import SharpenNode from './nodes/sharpen.js';
 
 // Initialize WebGL
 const canvas = document.getElementById('c');
@@ -11,12 +13,18 @@ twgl.setDefaults({ attribPrefix: 'a_' });
 // Create the network
 const network = new Network();
 const noise1 = network.createNode(NoiseNode, 'noise1', 1, 1);
-const constant1 = network.createNode(ConstantNode, 'constant1', 1, 2);
-const brightnessContrast1 = network.createNode(BrightnessContrastNode, 'brightnessContrast1', 2, 1);
-brightnessContrast1.brightness.value = 0.2;
+// const constant1 = network.createNode(ConstantNode, 'constant1', 1, 2);
+// const brightnessContrast1 = network.createNode(BrightnessContrastNode, 'brightnessContrast1', 2, 1);
+// brightnessContrast1.brightness.value = 0.2;
+const blur1 = network.createNode(BlurNode, 'blur1', 3, 1);
+blur1.size.value = 2.0;
+const sharpen1 = network.createNode(SharpenNode, 'sharpen1', 4, 1);
+sharpen1.intensity.value = 2.0;
 
-network.setRenderedNode(brightnessContrast1);
-network.connect(noise1, brightnessContrast1, 'image');
+network.setRenderedNode(sharpen1);
+network.connect(noise1, blur1, 'image');
+// network.connect(brightnessContrast1, blur1, 'image');
+network.connect(blur1, sharpen1, 'image');
 // Initialize the network (create the shaders)
 network.init(gl);
 window.network = network;
