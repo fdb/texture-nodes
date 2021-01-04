@@ -1,5 +1,6 @@
 const PARAMETER_TYPE_INT = 'int';
 const PARAMETER_TYPE_FLOAT = 'float';
+const PARAMETER_TYPE_FLOAT2 = 'float2';
 const PARAMETER_TYPE_STRING = 'string';
 
 export class Port {
@@ -42,6 +43,12 @@ export class Node {
 
   createFloatParameter(name, value) {
     const param = new Parameter(name, PARAMETER_TYPE_FLOAT, value);
+    this.parameters.push(param);
+    return param;
+  }
+
+  createFloat2Parameter(name, v1, v2) {
+    const param = new Parameter(name, PARAMETER_TYPE_FLOAT2, [v1, v2]);
     this.parameters.push(param);
     return param;
   }

@@ -106,6 +106,8 @@ export default class NoiseNode extends Node {
     super(name, x, y);
     this.width = this.createIntParameter('width', 512);
     this.height = this.createIntParameter('height', 512);
+    this.offset = this.createFloat2Parameter('offset', 0, 0);
+    this.scale = this.createFloatParameter('scale', 1);
   }
 
   init(network, gl) {
@@ -115,8 +117,8 @@ export default class NoiseNode extends Node {
   render(network, gl, time) {
     const uniforms = {
       // u_position: [1.0 + time * 0.001, -time * 0.0005],
-      u_position: [2.0, 0.0],
-      u_scale: 5.0,
+      u_position: this.offset.value,
+      u_scale: this.scale.value,
     };
 
     twgl.bindFramebufferInfo(gl, this.framebufferOut);

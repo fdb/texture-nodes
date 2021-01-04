@@ -13,25 +13,26 @@ twgl.setDefaults({ attribPrefix: 'a_' });
 
 // Create the network
 const network = new Network();
+
 const noise1 = network.createNode(NoiseNode, 'noise1', 1, 1);
+noise1.offset.value = [1.0, 0.0];
+noise1.scale.value = 0.5;
+
 const feedback1 = network.createNode(FeedbackNode, 'feedback1', 2, 1);
 feedback1.nodeName.value = 'sharpen1';
 
 const blur1 = network.createNode(BlurNode, 'blur1', 3, 1);
 blur1.size.value = 0.5;
+
 const sharpen1 = network.createNode(SharpenNode, 'sharpen1', 4, 1);
 sharpen1.intensity.value = 1.0;
 
 network.setRenderedNode(sharpen1);
 network.connect(noise1, feedback1, 'image');
 network.connect(feedback1, blur1, 'image');
-// network.connect(brightnessContrast1, blur1, 'image');
 network.connect(blur1, sharpen1, 'image');
-// Initialize the network (create the shaders)
 network.init(gl);
 window.network = network;
-
-// network.render(gl);
 
 const vs = `
 attribute vec4 a_position;
