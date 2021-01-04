@@ -50,13 +50,13 @@ export default class BlurNode extends Node {
     this.size = this.createFloatParameter('size', 1.0);
   }
 
-  init(gl) {
+  init(network, gl) {
     this._init(gl, BLUR_VS, BLUR_FS);
     this.pingPongBuffer = this._createFramebuffer(gl);
     this.pingPongBuffer.name = `${this.name}_pingpong`;
   }
 
-  render(gl) {
+  render(network, gl) {
     const uniforms = {
       u_image: this.imageIn.framebuffer.attachments[0],
       u_resolution: [this.width.value, this.height.value],

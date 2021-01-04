@@ -24,11 +24,11 @@ export default class ConstantNode extends Node {
     this.height = this.createIntParameter('height', 512);
   }
 
-  init(gl) {
+  init(network, gl) {
     this._initFramebufferOut(gl);
   }
 
-  render(gl) {
+  render(network, gl) {
     twgl.bindFramebufferInfo(gl, this.framebufferOut);
     gl.clearColor(1.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);

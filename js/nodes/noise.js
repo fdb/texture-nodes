@@ -108,15 +108,15 @@ export default class NoiseNode extends Node {
     this.height = this.createIntParameter('height', 512);
   }
 
-  init(gl) {
+  init(network, gl) {
     this._init(gl, NOISE_VS, NOISE_FS);
   }
 
-  render(gl, time) {
+  render(network, gl, time) {
     const uniforms = {
       // u_position: [1.0 + time * 0.001, -time * 0.0005],
-      u_position: [0.0, 0.0],
-      u_scale: 10.0,
+      u_position: [2.0, 0.0],
+      u_scale: 5.0,
     };
 
     twgl.bindFramebufferInfo(gl, this.framebufferOut);

@@ -52,11 +52,11 @@ export default class SharpenNode extends Node {
     this.intensity = this.createFloatParameter('intensity', 1.0);
   }
 
-  init(gl) {
+  init(network, gl) {
     this._init(gl, BRIGHTNESS_CONTRAST_VS, BRIGHTNESS_CONTRAST_FS);
   }
 
-  render(gl) {
+  render(network, gl) {
     const uniforms = {
       u_image: this.imageIn.framebuffer.attachments[0],
       u_resolution: [this.width.value, this.height.value],

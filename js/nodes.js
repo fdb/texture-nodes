@@ -1,5 +1,6 @@
 const PARAMETER_TYPE_INT = 'int';
 const PARAMETER_TYPE_FLOAT = 'float';
+const PARAMETER_TYPE_STRING = 'string';
 
 export class Port {
   constructor(name) {
@@ -24,6 +25,7 @@ export class Node {
     this.inputs = [];
     this.parameters = [];
     this.framebufferOut = null;
+    this.dirty = true;
   }
 
   createInput(name) {
@@ -42,6 +44,21 @@ export class Node {
     const param = new Parameter(name, PARAMETER_TYPE_FLOAT, value);
     this.parameters.push(param);
     return param;
+  }
+
+  createStringParameter(name, value) {
+    const param = new Parameter(name, PARAMETER_TYPE_STRING, value);
+    this.parameters.push(param);
+    return param;
+  }
+
+  setParameter(name, value) {
+    const param = this[name];
+    if (!param instanceof Parameter) {
+      throw new Error(`Could not find parameter ${name} on node ${this.name}`);
+    }
+    param.value = value;
+    this.dirty = true;
   }
 
   _setInputFramebuffer(inputName, framebuffer) {
@@ -77,7 +94,7 @@ export class Node {
     });
   }
 
-  render(gl) {
+  render(network, gl) {
     twgl.bindFramebufferInfo(gl, this.framebufferOut);
     gl.useProgram(this.programInfo.program);
     twgl.setBuffersAndAttributes(gl, this.programInfo, this.quadBuffer);
@@ -127,7 +144,7 @@ export class Network {
 
   init(gl) {
     for (const node of this.nodes) {
-      node.init(gl);
+      node.init(this, gl);
     }
   }
 
@@ -142,9 +159,14 @@ export class Network {
     const dependencies = this.connections.filter((conn) => conn.input === node.name);
     for (const conn of dependencies) {
       const outputNode = this.getNode(conn.output);
+      // if (outputNode.dirty) {
       this._renderNode(outputNode, gl, time);
+      // }
       node._setInputFramebuffer(conn.port, outputNode.framebufferOut);
     }
-    node.render(gl, time);
+    // if (node.dirty) {
+    node.render(this, gl, time);
+    // node.dirty = false;
+    // }
   }
 }

@@ -45,11 +45,11 @@ export default class BrightnessContrastNode extends Node {
     this.contrast = this.createFloatParameter('contrast', 0.0);
   }
 
-  init(gl) {
+  init(network, gl) {
     this._init(gl, BRIGHTNESS_CONTRAST_VS, BRIGHTNESS_CONTRAST_FS);
   }
 
-  render(gl) {
+  render(network, gl) {
     const uniforms = {
       u_image: this.imageIn.framebuffer.attachments[0],
       u_brightness: this.brightness.value,
