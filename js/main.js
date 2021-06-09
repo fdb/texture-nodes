@@ -16,8 +16,8 @@ twgl.setDefaults({ attribPrefix: 'a_' });
 const network = new Network();
 
 const noise1 = network.createNode(NoiseNode, 'noise1', 1, 1);
-noise1.offset.value = [1.0, 0.0];
-noise1.scale.value = 0.5;
+noise1.offset.value = [0.0, 0.0];
+noise1.scale.value = 2.0;
 
 const feedback1 = network.createNode(FeedbackNode, 'feedback1', 2, 1);
 feedback1.nodeName.value = 'sharpen1';
@@ -29,12 +29,15 @@ const sharpen1 = network.createNode(SharpenNode, 'sharpen1', 4, 1);
 sharpen1.intensity.value = 1.0;
 
 const image1 = network.createNode(ImageNode, 'image1', 5, 1);
+image1.url.value = '/img/road.jpg';
+
 const brightnessContrast1 = network.createNode(BrightnessContrastNode, 'brightnessContrast1', 6, 1);
 brightnessContrast1.brightness.value = -0.2;
 brightnessContrast1.contrast.value = 0.5;
 
 network.connect(image1, brightnessContrast1, 'image');
-network.connect(noise1, feedback1, 'image');
+
+network.connect(brightnessContrast1, feedback1, 'image');
 network.connect(feedback1, blur1, 'image');
 network.connect(blur1, sharpen1, 'image');
 
